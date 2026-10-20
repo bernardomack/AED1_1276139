@@ -1,64 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct No {
+typedef struct no {
     int valor;
-    struct No *prox;
-} No;
+    struct no *prox;
+} no;
 
 int main() {
     int n;
 
-    while (scanf("%d", &n) && n != 0) {
-        No *inicio = NULL;
-        No *fim = NULL;
+    while (scanf("%d", &n) == 1 && n != 0) {
+        no *inicio = NULL, *fim = NULL;
 
-        /* Cria a lista */
         for (int i = 1; i <= n; i++) {
-            No *novo = malloc(sizeof(No));
-
+            no *novo = malloc(sizeof(no));
             novo->valor = i;
             novo->prox = NULL;
 
-            if (inicio == NULL) {
+            if (inicio == NULL)
                 inicio = novo;
-                fim = novo;
-            } else {
+            else
                 fim->prox = novo;
-                fim = novo;
-            }
+
+            fim = novo;
         }
+
+        fim->prox = inicio;
 
         printf("Discarded cards:");
 
-        int primeiro = 1;
-
-        while (inicio->prox != NULL) {
-            /* Descarta o primeiro */
-            No *descartado = inicio;
-
-            if (primeiro) {
-                printf(" %d", descartado->valor);
-                primeiro = 0;
-            } else {
-                printf(", %d", descartado->valor);
-            }
-
-            inicio = inicio->prox;
-            free(descartado);
-
-            /* Move o primeiro para o final */
-            No *movido = inicio;
-
+        while (inicio->prox != inicio) {
+            no *lixo = inicio;
             inicio = inicio->prox;
 
-            movido->prox = NULL;
-            fim->prox = movido;
-            fim = movido;
+            printf(" %d", lixo->valor);
+
+            if (inicio->prox != inicio)
+                printf(",");
+
+            inicio = inicio->prox;
+            fim->prox = inicio;
+
+            lixo->prox = NULL;
+            free(lixo);
         }
 
-        printf("\n");
-        printf("Remaining card: %d\n", inicio->valor);
+        printf("\nRemaining card: %d\n", inicio->valor);
 
         free(inicio);
     }
