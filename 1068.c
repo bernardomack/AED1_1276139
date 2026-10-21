@@ -1,73 +1,46 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-typedef struct No {
+typedef struct no {
     char valor;
-    struct No *prox;
-} No;
-
-void empilhar(No **topo, char valor) {
-    No *novo = malloc(sizeof(No));
-
-    novo->valor = valor;
-    novo->prox = *topo;
-    *topo = novo;
-}
-
-char desempilhar(No **topo) {
-    No *aux = *topo;
-    char valor = aux->valor;
-
-    *topo = aux->prox;
-    free(aux);
-
-    return valor;
-}
+    struct no *prox;
+} no;
 
 int main() {
-    int N;
-    char expressao[1001];
+    char s[1001];
 
-    scanf("%d", &N);
-    getchar();
+    while (fgets(s, 1001, stdin) != NULL) {
+        no *topo = NULL;
+        int ok = 1;
 
-    for (int i = 0; i < N; i++) {
-        No *topo = NULL;
-        int correta = 1;
-
-        fgets(expressao, 1001, stdin);
-
-        for (int j = 0; expressao[j] != '\0'; j++) {
-
-            if (expressao[j] == '(') {
-                empilhar(&topo, '(');
-            }
-
-            else if (expressao[j] == ')') {
-
+        for (int i = 0; s[i] != '\0'; i++) {
+            if (s[i] == '(') {
+                no *novo = malloc(sizeof(no));
+                novo->valor = '(';
+                novo->prox = topo;
+                topo = novo;
+            } else if (s[i] == ')') {
                 if (topo == NULL) {
-                    correta = 0;
+                    ok = 0;
                     break;
                 }
 
-                desempilhar(&topo);
+                no *lixo = topo;
+                topo = topo->prox;
+                free(lixo);
             }
         }
 
-        if (topo != NULL) {
-            correta = 0;
-        }
+        if (topo != NULL)
+            ok = 0;
 
         while (topo != NULL) {
-            desempilhar(&topo);
+            no *lixo = topo;
+            topo = topo->prox;
+            free(lixo);
         }
 
-        if (correta) {
-            printf("correct\n");
-        } else {
-            printf("incorrect\n");
-        }
+        printf("%s\n", ok ? "correct" : "incorrect");
     }
 
     return 0;
