@@ -1,97 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Estrutura do nó para a Pilha Dinâmica
-typedef struct Node {
-    int data;
-    struct Node* next;
-} Node;
-
-// Função para empilhar (push)
-void push(Node** top, int val) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->data = val;
-    newNode->next = *top;
-    *top = newNode;
-}
-
-// Função para desempilhar (pop)
-int pop(Node** top) {
-    if (*top == NULL) return -1;
-    Node* temp = *top;
-    int val = temp->data;
-    *top = (*top)->next;
-    free(temp);
-    return val;
-}
-
-// Retorna o topo da pilha sem remover
-int peek(Node* top) {
-    if (top == NULL) return -1;
-    return top->data;
-}
-
-// Libera a memória restante da pilha
-void limparPilha(Node** top) {
-    while (*top != NULL) {
-        pop(top);
-    }
-}
+typedef struct no {
+    int valor;
+    struct no *prox;
+} no;
 
 int main() {
-    int N;
+    int n;
 
-    // Lê N até encontrar N = 0 (fim de todos os blocos)
-    while (scanf("%d", &N) == 1 && N != 0) {
-        
+    while (scanf("%d", &n) == 1 && n != 0) {
+        int *v = malloc(n * sizeof(int));
+
         while (1) {
-            int alvo[1005];
-            scanf("%d", &alvo[0]);
+            scanf("%d", &v[0]);
 
-            // Se o primeiro elemento for 0, acabou o bloco atual
-            if (alvo[0] == 0) {
+            if (v[0] == 0)
                 break;
-            }
 
-            // Lê o restante do arranjo desejado para B
-            for (int i = 1; i < N; i++) {
-                scanf("%d", &alvo[i]);
-            }
+            for (int i = 1; i < n; i++)
+                scanf("%d", &v[i]);
 
-            Node* pilha = NULL;
-            int vagao_atual = 1; // Próximo vagão a chegar de A
-            int idx_alvo = 0;    // Índice da sequência desejada em B
-            int possivel = 1;
+            no *topo = NULL;
+            int prox = 1, ok = 1;
 
-            while (idx_alvo < N) {
-                // Se a pilha tiver no topo o vagão que precisamos agora, desempilhamos para B
-                if (pilha != NULL && peek(pilha) == alvo[idx_alvo]) {
-                    pop(&pilha);
-                    idx_alvo++;
+            for (int i = 0; i < n; i++) {
+                while (prox <= n && (topo == NULL || topo->valor != v[i])) {
+                    no *novo = malloc(sizeof(no));
+                    novo->valor = prox++;
+                    novo->prox = topo;
+                    topo = novo;
                 }
-                // Se ainda há vagões vindo de A, empilhamos
-                else if (vagao_atual <= N) {
-                    push(&pilha, vagao_atual);
-                    vagao_atual++;
-                }
-                // Se não podemos desempilhar o desejado nem empilhar novos vagões, é impossível
-                else {
-                    possivel = 0;
+
+                if (topo != NULL && topo->valor == v[i]) {
+                    no *lixo = topo;
+                    topo = topo->prox;
+                    free(lixo);
+                } else {
+                    ok = 0;
                     break;
                 }
             }
 
-            if (possivel) {
-                printf("Yes\n");
-            } else {
-                printf("No\n");
+            while (topo != NULL) {
+                no *lixo = topo;
+                topo = topo->prox;
+                free(lixo);
             }
 
-            limparPilha(&pilha);
+            printf("%s\n", ok ? "Yes" : "No");
         }
 
-        // Linha em branco após o término de cada bloco
         printf("\n");
+        free(v);
     }
 
     return 0;
