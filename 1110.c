@@ -31,18 +31,18 @@ int main() {
 
         while (inicio->prox != inicio) {
             no *lixo = inicio;
-            inicio = inicio->prox;
-
             printf(" %d", lixo->valor);
+
+            inicio = inicio->prox;
+            fim->prox = inicio;
+            free(lixo);
 
             if (inicio->prox != inicio)
                 printf(",");
 
+            fim = inicio;
             inicio = inicio->prox;
             fim->prox = inicio;
-
-            lixo->prox = NULL;
-            free(lixo);
         }
 
         printf("\nRemaining card: %d\n", inicio->valor);
